@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和弦词典</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #fff;
+            margin: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: #fff;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #4a90d9;
+            color: #fff;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 0 20px 20px;
+        }
+        
+        .panel {
+            display: none;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .panel.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+        
+        button.query-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button.query-btn:hover {
+            background: #3a7bc8;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .result-notes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .note {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            padding: 8px 16px;
+            background: #4a90d9;
+            color: #fff;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        
+        .result-type {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+        
+        .help {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4fd;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .help h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .help ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .help li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>和弦词典</h1>
+    </header>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('chord')">和弦查音名</button>
+        <button class="tab" onclick="switchTab('notes')">音名查和弦</button>
+    </div>
+    
+    <div class="content">
+        <div id="chord-panel" class="panel active">
+            <div class="input-group">
+                <label for="chord-input">输入和弦名称</label>
+                <input type="text" id="chord-input" placeholder="例如: Cmaj7, Dm, G7" onkeypress="handleEnter(event, 'chord')">
+            </div>
+            <button class="query-btn" onclick="queryChord()">查询</button>
+            <div id="chord-result" class="result">
+                <div class="result-title" id="chord-result-title"></div>
+                <div class="result-notes" id="chord-result-notes"></div>
+                <div class="result-type" id="chord-result-type"></div>
+            </div>
+            <div class="help">
+                <h3>和弦标记说明</h3>
+                <ul>
+                    <li>大三和弦: C, D, E, F, G, A, B</li>
+                    <li>小三和弦: Cm, Dm, Em, Fm, Gm, Am, Bm</li>
+                    <li>增三和弦: Caug, Daug...</li>
+                    <li>减三和弦: Cdim, Ddim...</li>
+                    <li>七和弦: C7, Cmaj7, Cm7, Cdim7, Cm7b5</li>
+                    <li>挂留和弦: Csus2, Csus4</li>
+                    <li>转位: C/E, C/G (斜杠后为低音)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="notes-panel" class="panel">
+            <div class="input-group">
+                <label for="notes-input">输入音名（用空格或逗号分隔）</label>
+                <input type="text" id="notes-input" placeholder="例如: C E G 或 C,E,G" onkeypress="handleEnter(event, 'notes')">
+            </div>
+            <button class="query-btn" onclick="queryNotes()">查询</button>
+            <div id="notes-result" class="result">
+                <div class="result-title" id="notes-result-title"></div>
+                <div class="result-type" id="notes-result-type"></div>
+            </div>
+            <div class="help">
+                <h3>输入说明</h3>
+                <ul>
+                    <li>支持中文: 升C、降D</li>
+                    <li>支持英文: C#, Db, C, D, E</li>
+                    <li>支持大小写: C 和 c 都可以</li>
+                    <li>空格或逗号分隔多个音</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const NOTES_CN = {'C': 'C', 'D': 'D', 'E': 'E', 'F': 'F', 'G': 'G', 'A': 'A', 'B': 'B'};
+        
+        const NOTE_ALIASES = {
+            'Db': 'C#', 'D♭': 'C#',
+            'Eb': 'D#', 'E♭': 'D#',
+            'Gb': 'F#', 'F♭': 'F#', 'G♭': 'F#',
+            'Ab': 'G#', 'A♭': 'G#',
+            'Bb': 'A#', 'B♭': 'A#',
+            'Cb': 'B', 'C♭': 'B',
+            'E#': 'F', 'F♭': 'E',
+            'B#': 'C', 'C♭': 'B'
+        };
+        
+        const CHORD_INTERVALS = {
+            'major': [0, 4, 7],
+            'm': [0, 3, 7],
+            'minor': [0, 3, 7],
+            'dim': [0, 3, 6],
+            'aug': [0, 4, 8],
+            'augmented': [0, 4, 8],
+            'diminished': [0, 3, 6],
+            '7': [0, 4, 7, 10],
+            'maj7': [0, 4, 7, 11],
+            'm7': [0, 3, 7, 10],
+            'minor7': [0, 3, 7, 10],
+            '7b5': [0, 3, 6, 10],
+            'm7b5': [0, 3, 6, 10],
+            'dim7': [0, 3, 6, 9],
+            'sus2': [0, 2, 7],
+            'sus4': [0, 5, 7],
+            'add9': [0, 4, 7, 14],
+            '9': [0, 4, 7, 10, 14],
+            'maj9': [0, 4, 7, 11, 14],
+            'm9': [0, 3, 7, 10, 14],
+            '11': [0, 4, 7, 10, 14, 17],
+            '13': [0, 4, 7, 10, 14, 17, 21],
+            '6': [0, 4, 7, 9],
+            'm6': [0, 3, 7, 9],
+            '5': [0, 7]
+        };
+        
+        const CHORD_NAMES = {
+            'major': '大三和弦',
+            'm': '小三和弦',
+            'minor': '小三和弦',
+            'dim': '减三和弦',
+            'aug': '增三和弦',
+            'augmented': '增三和弦',
+            'diminished': '减三和弦',
+            '7': '属七和弦',
+            'maj7': '大七和弦',
+            'm7': '小七和弦',
+            'minor7': '小七和弦',
+            '7b5': '半减七和弦',
+            'm7b5': '半减七和弦',
+            'dim7': '减七和弦',
+            'sus2': '挂二和弦',
+            'sus4': '挂四和弦',
+            'add9': '加九和弦',
+            '9': '九和弦',
+            'maj9': '大九和弦',
+            'm9': '小九和弦',
+            '11': '十一和弦',
+            '13': '十三和弦',
+            '6': '大六和弦',
+            'm6': '小六和弦',
+            '5': '五和弦'
+        };
+        
+        function normalizeNote(note) {
+            note = note.trim().toUpperCase();
+            if (NOTE_ALIASES[note]) {
+                return NOTE_ALIASES[note];
+            }
+            note = note.replace('♯', '#').replace('♭', 'b');
+            if (NOTE_ALIASES[note]) {
+                return NOTE_ALIASES[note];
+            }
+            let base = note.charAt(0);
+            if (NOTES_CN[base]) {
+                base = NOTES_CN[base];
+            }
+            if (note.length > 1) {
+                if (note.charAt(1) === '#' || note.charAt(1) === '♯') {
+                    base = base + '#';
+                } else if (note.charAt(1) === 'B' || note.charAt(1) === '♭') {
+                    if (base === 'E') return 'F';
+                    if (base === 'B') return 'C';
+                    for (let i = 0; i < NOTES.length - 1; i++) {
+                        if (NOTES[i].charAt(0) === base && NOTES[i].length === 1) {
+                            return NOTES[i + 1];
+                        }
+                    }
+                }
+            }
+            return base;
+        }
+        
+        function getNoteIndex(note) {
+            return NOTES.indexOf(normalizeNote(note));
+        }
+        
+        function parseChord(chordStr) {
+            chordStr = chordStr.trim().toUpperCase().replace(' ', '');
+            
+            let root = chordStr.charAt(0);
+            if (chordStr.length > 1) {
+                if (chordStr.charAt(1) === '#') {
+                    root = root + '#';
+                } else if (chordStr.charAt(1) === 'B' || chordStr.charAt(1) === '♭') {
+                    if (root === 'E') root = 'F';
+                    else if (root === 'B') root = 'C';
+                    else {
+                        const idx = 'ABCDEFG'.indexOf(root);
+                        if (idx > 0) root = 'ABCDEFG'.charAt(idx - 1) + '#';
+                    }
+                }
+            }
+            
+            let quality = 'major';
+            let suffix = chordStr.substring(root.length);
+            
+            if (suffix.includes('/')) {
+                suffix = suffix.split('/')[0];
+            }
+            
+            for (let key of Object.keys(CHORD_INTERVALS).sort((a, b) => b.length - a.length)) {
+                if (suffix === key || suffix.startsWith(key)) {
+                    quality = key;
+                    break;
+                }
+            }
+            
+            if (suffix === '' || suffix === 'MAJ') {
+                quality = 'major';
+            } else if (suffix === 'DIM') {
+                quality = 'dim';
+            } else if (suffix === 'AUG' || suffix === '+') {
+                quality = 'aug';
+            } else if (suffix === 'SUS') {
+                quality = 'sus4';
+            } else if (suffix === 'M' || suffix === '-') {
+                quality = 'm';
+            }
+            
+            return { root: normalizeNote(root), quality };
+        }
+        
+        function getChordNotes(root, quality) {
+            const intervals = CHORD_INTERVALS[quality];
+            if (!intervals) return [];
+            
+            const rootIdx = getNoteIndex(root);
+            return intervals.map(interval => NOTES[(rootIdx + interval) % 12]);
+        }
+        
+        function queryChord() {
+            const input = document.getElementById('chord-input').value;
+            if (!input) return;
+            
+            try {
+                const { root, quality } = parseChord(input);
+                const notes = getChordNotes(root, quality);
+                const chordName = root + ' ' + (CHORD_NAMES[quality] || quality);
+                
+                document.getElementById('chord-result-title').textContent = chordName;
+                document.getElementById('chord-result-notes').innerHTML = 
+                    notes.map(n => `<span class="note">${n}</span>`).join('');
+                document.getElementById('chord-result-type').textContent = `音程: ${notes.join(' - ')}`;
+                document.getElementById('chord-result').classList.add('show');
+            } catch (e) {
+                showError('chord-result', '无法解析和弦，请检查输入格式');
+            }
+        }
+        
+        function queryNotes() {
+            const input = document.getElementById('notes-input').value;
+            if (!input) return;
+            
+            const notes = input.split(/[,\s]+/).filter(n => n.trim()).map(normalizeNote);
+            if (notes.length < 2) {
+                showError('notes-result', '请输入至少两个音名');
+                return;
+            }
+            
+            const uniqueNotes = [...new Set(notes)];
+            const root = uniqueNotes[0];
+            
+            const foundChords = [];
+            for (let quality of Object.keys(CHORD_INTERVALS)) {
+                const chordNotes = getChordNotes(root, quality);
+                const chordUnique = [...new Set(chordNotes.map(n => normalizeNote(n)))];
+                
+                if (chordUnique.length === uniqueNotes.length || 
+                    (chordUnique.length > uniqueNotes.length && uniqueNotes.length >= 3)) {
+                    if (uniqueNotes.every(n => chordUnique.includes(n))) {
+                        foundChords.push({
+                            name: root + ' ' + (CHORD_NAMES[quality] || quality),
+                            quality: quality
+                        });
+                    }
+                }
+            }
+            
+            if (foundChords.length === 0) {
+                const sortedNotes = uniqueNotes.sort((a, b) => getNoteIndex(a) - getNoteIndex(b));
+                document.getElementById('notes-result-title').textContent = '可能的和弦: ' + sortedNotes.join(' - ');
+                document.getElementById('notes-result-type').textContent = '未找到精确匹配的和弦，请尝试不同的音名组合';
+            } else {
+                document.getElementById('notes-result-title').textContent = foundChords.map(c => c.name).join(' 或 ');
+                document.getElementById('notes-result-type').textContent = `找到 ${foundChords.length} 种可能的和弦`;
+            }
+            
+            document.getElementById('notes-result').classList.add('show');
+        }
+        
+        function showError(resultId, message) {
+            const result = document.getElementById(resultId);
+            result.classList.add('show');
+            result.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            
+            if (tab === 'chord') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('chord-panel').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('notes-panel').classList.add('active');
+            }
+        }
+        
+        function handleEnter(event, type) {
+            if (event.key === 'Enter') {
+                if (type === 'chord') queryChord();
+                else queryNotes();
+            }
+        }
+    </script>
+</body>
+</html>

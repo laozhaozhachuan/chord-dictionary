@@ -436,57 +436,48 @@
                 if (suffix) {
                     suffix = suffix.toLowerCase();
                     
-                    for (let key of Object.keys(CHORD_INTERVALS)) {
-                        if (suffix === key || suffix.startsWith(key)) {
-                            quality = key;
-                            break;
-                        }
-                    }
-                    
-                    if (quality === 'major') {
-                        if (suffix === '' || suffix === 'maj') {
-                            quality = 'major';
-                        } else if (suffix === 'dim') {
-                            quality = 'dim';
-                        } else if (suffix === 'aug' || suffix === '+') {
-                            quality = 'aug';
-                        } else if (suffix === 'sus2') {
-                            quality = 'sus2';
-                        } else if (suffix === 'sus4' || suffix === 'sus') {
-                            quality = 'sus4';
-                        } else if (suffix === 'm' || suffix === '-') {
-                            quality = 'm';
-                        } else if (suffix === '6') {
-                            quality = '6';
-                        } else if (suffix === 'm6') {
-                            quality = 'm6';
-                        } else if (suffix === '5') {
-                            quality = '5';
-                        } else if (suffix === '7') {
-                            quality = '7';
-                        } else if (suffix === '9') {
-                            quality = '9';
-                        } else if (suffix === '11') {
-                            quality = '11';
-                        } else if (suffix === '13') {
-                            quality = '13';
-                        } else if (suffix.startsWith('maj7')) {
-                            quality = 'maj7';
-                        } else if (suffix.startsWith('maj9')) {
-                            quality = 'maj9';
-                        } else if (suffix.startsWith('m7')) {
-                            quality = 'm7';
-                        } else if (suffix.startsWith('m9')) {
-                            quality = 'm9';
-                        } else if (suffix.startsWith('7b5')) {
-                            quality = '7b5';
-                        } else if (suffix.startsWith('m7b5')) {
-                            quality = 'm7b5';
-                        } else if (suffix.startsWith('dim7')) {
-                            quality = 'dim7';
-                        } else if (suffix.startsWith('add9')) {
-                            quality = 'add9';
-                        }
+                    if (suffix === 'maj7') {
+                        quality = 'maj7';
+                    } else if (suffix === 'maj9') {
+                        quality = 'maj9';
+                    } else if (suffix === 'm7') {
+                        quality = 'm7';
+                    } else if (suffix === 'm9') {
+                        quality = 'm9';
+                    } else if (suffix === '7b5') {
+                        quality = '7b5';
+                    } else if (suffix === 'm7b5') {
+                        quality = 'm7b5';
+                    } else if (suffix === 'dim7') {
+                        quality = 'dim7';
+                    } else if (suffix === 'add9') {
+                        quality = 'add9';
+                    } else if (suffix === 'sus2') {
+                        quality = 'sus2';
+                    } else if (suffix === 'sus4' || suffix === 'sus') {
+                        quality = 'sus4';
+                    } else if (suffix === 'dim') {
+                        quality = 'dim';
+                    } else if (suffix === 'aug' || suffix === '+') {
+                        quality = 'aug';
+                    } else if (suffix === 'm' || suffix === '-') {
+                        quality = 'm';
+                    } else if (suffix === '6') {
+                        quality = '6';
+                    } else if (suffix === 'm6') {
+                        quality = 'm6';
+                    } else if (suffix === '5') {
+                        quality = '5';
+                    } else if (suffix === '7') {
+                        quality = '7';
+                    } else if (suffix === '9') {
+                        quality = '9';
+                    } else if (suffix === '11') {
+                        quality = '11';
+                    } else if (suffix === '13') {
+                        quality = '13';
+                    } else if (suffix === '' || suffix === 'maj') {
+                        quality = 'major';
                     }
                 }
             }

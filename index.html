@@ -212,6 +212,7 @@
             <div class="help">
                 <h3>和弦标记说明</h3>
                 <ul>
+                    <li>请使用英文格式输入，不支持中文</li>
                     <li>大三和弦: C, D, E, F, G, A, B</li>
                     <li>小三和弦: Cm, Dm, Em, Fm, Gm, Am, Bm</li>
                     <li>增三和弦: Caug, Daug...</li>
@@ -408,7 +409,7 @@
             let quality = 'major';
             let bass = null;
             
-            const cnMatch = chordStr.match(/^([A-Ga-g])([#♯b♭]?)(.*)$/);
+            const cnMatch = chordStr.trim().match(/^([A-Ga-g])([#♯b♭]?)(.*)$/);
             
             if (cnMatch) {
                 root = cnMatch[1].toUpperCase();
@@ -485,20 +486,6 @@
                             quality = 'dim7';
                         } else if (suffix.startsWith('add9')) {
                             quality = 'add9';
-                        }
-                    }
-                }
-            } else {
-                const cnOnly = chordStr.trim();
-                if (CHORD_CN_MAP[cnOnly]) {
-                    quality = CHORD_CN_MAP[cnOnly];
-                    root = 'C';
-                } else {
-                    for (let cnKey of Object.keys(CHORD_CN_MAP).sort((a, b) => b.length - a.length)) {
-                        if (cnOnly.includes(cnKey)) {
-                            quality = CHORD_CN_MAP[cnKey];
-                            root = 'C';
-                            break;
                         }
                     }
                 }

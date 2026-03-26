@@ -368,10 +368,15 @@
             
             let quality = 'major';
             let suffix = chordStr.substring(root.length);
+            let bass = null;
             
             if (suffix.includes('/')) {
-                suffix = suffix.split('/')[0];
+                const parts = suffix.split('/');
+                suffix = parts[0];
+                bass = normalizeNote(parts[1]);
             }
+            
+            suffix = suffix.toLowerCase();
             
             for (let key of Object.keys(CHORD_INTERVALS).sort((a, b) => b.length - a.length)) {
                 if (suffix === key || suffix.startsWith(key)) {
@@ -380,19 +385,19 @@
                 }
             }
             
-            if (suffix === '' || suffix === 'MAJ') {
+            if (suffix === '' || suffix === 'maj') {
                 quality = 'major';
-            } else if (suffix === 'DIM') {
+            } else if (suffix === 'dim') {
                 quality = 'dim';
-            } else if (suffix === 'AUG' || suffix === '+') {
+            } else if (suffix === 'aug' || suffix === '+') {
                 quality = 'aug';
-            } else if (suffix === 'SUS') {
+            } else if (suffix.startsWith('sus')) {
                 quality = 'sus4';
-            } else if (suffix === 'M' || suffix === '-') {
+            } else if (suffix === 'm' || suffix === '-') {
                 quality = 'm';
             }
             
-            return { root: normalizeNote(root), quality };
+            return { root: normalizeNote(root), quality, bass };
         }
         
         function getChordNotes(root, quality) {
@@ -408,9 +413,20 @@
             if (!input) return;
             
             try {
-                const { root, quality } = parseChord(input);
-                const notes = getChordNotes(root, quality);
-                const chordName = root + ' ' + (CHORD_NAMES[quality] || quality);
+                const { root, quality, bass } = parseChord(input);
+                let notes = getChordNotes(root, quality);
+                let chordName = root + ' ' + (CHORD_NAMES[quality] || quality);
+                
+                if (bass && bass !== root) {
+                    const sortedNotes = [...notes].sort((a, b) => {
+                        const aIdx = getNoteIndex(a);
+                        const bIdx = getNoteIndex(b);
+                        const rootIdx = getNoteIndex(root);
+                        return ((aIdx - rootIdx + 12) % 12) - ((bIdx - rootIdx + 12) % 12);
+                    });
+                    notes = sortedNotes;
+                    chordName += ` (转位: ${bass}低音)`;
+                }
                 
                 document.getElementById('chord-result-title').textContent = chordName;
                 document.getElementById('chord-result-notes').innerHTML = 

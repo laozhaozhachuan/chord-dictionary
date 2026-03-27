@@ -528,14 +528,16 @@
             const input = document.getElementById('notes-input').value;
             if (!input) return;
             
+            const resultDiv = document.getElementById('notes-result');
+            resultDiv.classList.remove('show');
+            
             const notes = input.split(/[,\s]+/).filter(n => n.trim()).map(normalizeNote);
             if (notes.length < 2) {
-                showError('notes-result', '请输入至少两个音名');
+                resultDiv.innerHTML = `<div class="error">请输入至少两个音名</div>`;
+                resultDiv.classList.add('show');
                 return;
             }
             
-            const resultDiv = document.getElementById('notes-result');
-            resultDiv.classList.remove('show');
             document.getElementById('notes-result-title').textContent = '';
             document.getElementById('notes-result-type').textContent = '';
             

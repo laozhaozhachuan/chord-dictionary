@@ -160,7 +160,6 @@
         
         .error {
             color: #e74c3c;
-            margin-top: 10px;
         }
         
         .help {
@@ -529,17 +528,23 @@
             if (!input) return;
             
             const resultDiv = document.getElementById('notes-result');
+            const titleDiv = document.getElementById('notes-result-title');
+            const typeDiv = document.getElementById('notes-result-type');
+            
             resultDiv.classList.remove('show');
+            titleDiv.textContent = '';
+            typeDiv.textContent = '';
             
             const notes = input.split(/[,\s]+/).filter(n => n.trim()).map(normalizeNote);
             if (notes.length < 2) {
-                resultDiv.innerHTML = `<div class="error">请输入至少两个音名</div>`;
+                titleDiv.textContent = '请输入至少两个音名';
+                titleDiv.className = 'result-title error';
+                typeDiv.textContent = '';
                 resultDiv.classList.add('show');
                 return;
             }
             
-            document.getElementById('notes-result-title').textContent = '';
-            document.getElementById('notes-result-type').textContent = '';
+            titleDiv.className = 'result-title';
             
             const uniqueNotes = [...new Set(notes)];
             const root = uniqueNotes[0];

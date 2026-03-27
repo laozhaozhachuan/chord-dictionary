@@ -598,6 +598,8 @@
             const result = document.getElementById(resultId);
             result.classList.add('show');
             result.innerHTML = `<div class="error">${message}</div>`;
+            result.querySelector('.result-title').textContent = '';
+            result.querySelector('.result-type').textContent = '';
         }
         
         function switchTab(tab) {

@@ -318,10 +318,11 @@
         function normalizeNote(note) {
             note = note.trim();
             note = note.replace('♯', '#').replace('♭', 'b');
-            if (NOTE_ALIASES[note.toUpperCase()]) {
-                return NOTE_ALIASES[note.toUpperCase()];
+            note = note.charAt(0).toUpperCase() + note.slice(1);
+            if (NOTE_ALIASES[note]) {
+                return NOTE_ALIASES[note];
             }
-            let base = note.charAt(0).toUpperCase();
+            let base = note.charAt(0);
             if (note.length > 1) {
                 if (note.charAt(1) === '#' || note.charAt(1) === '♯') {
                     base = base + '#';

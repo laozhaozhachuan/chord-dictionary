@@ -237,7 +237,6 @@
             <div class="help">
                 <h3>输入说明</h3>
                 <ul>
-                    <li>支持中文: 升C、降D</li>
                     <li>支持英文: C#, Db, C, D, E</li>
                     <li>支持大小写: C 和 c 都可以</li>
                     <li>空格或逗号分隔多个音</li>
@@ -248,7 +247,6 @@
     
     <script>
         const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-        const NOTES_CN = {'C': 'C', 'D': 'D', 'E': 'E', 'F': 'F', 'G': 'G', 'A': 'A', 'B': 'B'};
         
         const NOTE_ALIASES = {
             'Db': 'C#', 'D♭': 'C#',
@@ -317,58 +315,6 @@
             '5': '五和弦'
         };
         
-        const CHORD_CN_MAP = {
-            '大三': 'major',
-            '大三和弦': 'major',
-            '大': 'major',
-            '小': 'm',
-            '小三': 'm',
-            '小三和弦': 'm',
-            '增三': 'aug',
-            '增三和弦': 'aug',
-            '减三': 'dim',
-            '减三和弦': 'dim',
-            '属七': '7',
-            '属七和弦': '7',
-            '7和弦': '7',
-            '大七': 'maj7',
-            '大七和弦': 'maj7',
-            '小七': 'm7',
-            '小七和弦': 'm7',
-            '半减七': '7b5',
-            '半减七和弦': '7b5',
-            '减七': 'dim7',
-            '减七和弦': 'dim7',
-            '挂二': 'sus2',
-            '挂二和弦': 'sus2',
-            'sus2和弦': 'sus2',
-            '挂四': 'sus4',
-            '挂四和弦': 'sus4',
-            'sus4和弦': 'sus4',
-            '挂留二': 'sus2',
-            '挂留四': 'sus4',
-            '九': '9',
-            '九和弦': '9',
-            '大九': 'maj9',
-            '大九和弦': 'maj9',
-            '小九': 'm9',
-            '小九和弦': 'm9',
-            '十一': '11',
-            '十一和弦': '11',
-            '十三': '13',
-            '十三和弦': '13',
-            '六': '6',
-            '六和弦': '6',
-            '大六': '6',
-            '大六和弦': '6',
-            '小六': 'm6',
-            '小六和弦': 'm6',
-            '五': '5',
-            '五和弦': '5',
-            '空': '5',
-            '省略五音': '5'
-        };
-        
         function normalizeNote(note) {
             note = note.trim().toUpperCase();
             if (NOTE_ALIASES[note]) {
@@ -379,9 +325,6 @@
                 return NOTE_ALIASES[note];
             }
             let base = note.charAt(0);
-            if (NOTES_CN[base]) {
-                base = NOTES_CN[base];
-            }
             if (note.length > 1) {
                 if (note.charAt(1) === '#' || note.charAt(1) === '♯') {
                     base = base + '#';

@@ -534,6 +534,8 @@
                 return;
             }
             
+            document.getElementById('notes-result').classList.remove('show');
+            
             const uniqueNotes = [...new Set(notes)];
             const root = uniqueNotes[0];
             

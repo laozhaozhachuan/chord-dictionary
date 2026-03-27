@@ -537,15 +537,23 @@
             const uniqueNotes = [...new Set(notes)];
             const root = uniqueNotes[0];
             
-            const foundChords = [];
+            const exactMatches = [];
+            const possibleMatches = [];
+            
             for (let quality of Object.keys(CHORD_INTERVALS)) {
                 const chordNotes = getChordNotes(root, quality);
                 const chordUnique = [...new Set(chordNotes.map(n => normalizeNote(n)))];
                 
-                if (chordUnique.length === uniqueNotes.length || 
-                    (chordUnique.length > uniqueNotes.length && uniqueNotes.length >= 3)) {
+                if (chordUnique.length === uniqueNotes.length) {
                     if (uniqueNotes.every(n => chordUnique.includes(n))) {
-                        foundChords.push({
+                        exactMatches.push({
+                            name: root + ' ' + (CHORD_NAMES[quality] || quality),
+                            quality: quality
+                        });
+                    }
+                } else if (chordUnique.length > uniqueNotes.length && uniqueNotes.length >= 3) {
+                    if (uniqueNotes.every(n => chordUnique.includes(n))) {
+                        possibleMatches.push({
                             name: root + ' ' + (CHORD_NAMES[quality] || quality),
                             quality: quality
                         });
@@ -553,14 +561,30 @@
                 }
             }
             
-            if (foundChords.length === 0) {
-                const sortedNotes = uniqueNotes.sort((a, b) => getNoteIndex(a) - getNoteIndex(b));
-                document.getElementById('notes-result-title').textContent = '可能的和弦: ' + sortedNotes.join(' - ');
-                document.getElementById('notes-result-type').textContent = '未找到精确匹配的和弦，请尝试不同的音名组合';
+            let resultTitle = '';
+            let resultType = '';
+            
+            if (exactMatches.length > 0) {
+                resultTitle = '🎯 最匹配: ' + exactMatches[0].name;
+                if (exactMatches.length > 1) {
+                    resultTitle += ' 等';
+                }
+                if (possibleMatches.length > 0) {
+                    resultType = '可能和弦: ' + possibleMatches.map(c => c.name).join(' / ');
+                } else {
+                    resultType = '';
+                }
+            } else if (possibleMatches.length > 0) {
+                resultTitle = '可能的和弦: ' + possibleMatches.map(c => c.name).join(' / ');
+                resultType = `共 ${possibleMatches.length} 种`;
             } else {
-                document.getElementById('notes-result-title').textContent = foundChords.map(c => c.name).join(' 或 ');
-                document.getElementById('notes-result-type').textContent = `找到 ${foundChords.length} 种可能的和弦`;
+                const sortedNotes = uniqueNotes.sort((a, b) => getNoteIndex(a) - getNoteIndex(b));
+                resultTitle = '未找到匹配的和弦';
+                resultType = `输入的音: ${sortedNotes.join(' - ')}`;
             }
+            
+            document.getElementById('notes-result-title').textContent = resultTitle;
+            document.getElementById('notes-result-type').textContent = resultType;
             
             document.getElementById('notes-result').classList.add('show');
         }

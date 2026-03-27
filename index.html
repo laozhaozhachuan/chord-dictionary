@@ -575,18 +575,23 @@
             let resultTitle = '';
             let resultType = '';
             
+            const getChordWithNotes = (root, quality) => {
+                const notes = getChordNotes(root, quality);
+                return (CHORD_NAMES[quality] || quality) + ` (${notes.join(' - ')})`;
+            };
+            
             if (exactMatches.length > 0) {
-                resultTitle = '🎯 最匹配: ' + exactMatches[0].name;
+                resultTitle = '🎯 最匹配: ' + exactMatches[0].name + ` (${getChordNotes(root, exactMatches[0].quality).join(' - ')})`;
                 if (exactMatches.length > 1) {
                     resultTitle += ' 等';
                 }
                 if (possibleMatches.length > 0) {
-                    resultType = '可能和弦: ' + possibleMatches.map(c => c.name).join(' / ');
+                    resultType = '可能和弦: ' + possibleMatches.map(c => getChordWithNotes(root, c.quality)).join(' / ');
                 } else {
                     resultType = '';
                 }
             } else if (possibleMatches.length > 0) {
-                resultTitle = '可能的和弦: ' + possibleMatches.map(c => c.name).join(' / ');
+                resultTitle = '可能的和弦: ' + possibleMatches.map(c => getChordWithNotes(root, c.quality)).join(' / ');
                 resultType = `共 ${possibleMatches.length} 种`;
             } else {
                 const sortedNotes = uniqueNotes.sort((a, b) => getNoteIndex(a) - getNoteIndex(b));

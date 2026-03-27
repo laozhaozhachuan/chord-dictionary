@@ -199,7 +199,7 @@
     <div class="content">
         <div id="chord-panel" class="panel active">
             <div class="input-group">
-                <label for="chord-input">输入和弦名称</label>
+                <label for="chord-input">输入和弦名称 <span style="font-weight: normal; color: #e74c3c; font-size: 12px;">(请使用英文格式，不支持中文)</span></label>
                 <input type="text" id="chord-input" placeholder="例如: Cmaj7, Dm, G7" onkeypress="handleEnter(event, 'chord')">
             </div>
             <button class="query-btn" onclick="queryChord()">查询</button>
@@ -211,7 +211,6 @@
             <div class="help">
                 <h3>和弦标记说明</h3>
                 <ul>
-                    <li>请使用英文格式输入，不支持中文</li>
                     <li>大三和弦: C, D, E, F, G, A, B</li>
                     <li>小三和弦: Cm, Dm, Em, Fm, Gm, Am, Bm</li>
                     <li>增三和弦: Caug, Daug...</li>

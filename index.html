@@ -326,7 +326,7 @@
         function normalizeNote(note) {
             note = note.trim();
             note = note.replace('♯', '#').replace('♭', 'b');
-            note = note.charAt(0).toUpperCase() + note.slice(1);
+            note = note.charAt(0).toUpperCase() + note.slice(1).toLowerCase();
             if (NOTE_ALIASES[note]) {
                 return NOTE_ALIASES[note];
             }

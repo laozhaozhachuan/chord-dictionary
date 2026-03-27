@@ -534,7 +534,10 @@
                 return;
             }
             
-            document.getElementById('notes-result').classList.remove('show');
+            const resultDiv = document.getElementById('notes-result');
+            resultDiv.classList.remove('show');
+            document.getElementById('notes-result-title').textContent = '';
+            document.getElementById('notes-result-type').textContent = '';
             
             const uniqueNotes = [...new Set(notes)];
             const root = uniqueNotes[0];

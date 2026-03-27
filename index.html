@@ -316,19 +316,16 @@
         };
         
         function normalizeNote(note) {
-            note = note.trim().toUpperCase();
-            if (NOTE_ALIASES[note]) {
-                return NOTE_ALIASES[note];
-            }
+            note = note.trim();
             note = note.replace('♯', '#').replace('♭', 'b');
-            if (NOTE_ALIASES[note]) {
-                return NOTE_ALIASES[note];
+            if (NOTE_ALIASES[note.toUpperCase()]) {
+                return NOTE_ALIASES[note.toUpperCase()];
             }
-            let base = note.charAt(0);
+            let base = note.charAt(0).toUpperCase();
             if (note.length > 1) {
                 if (note.charAt(1) === '#' || note.charAt(1) === '♯') {
                     base = base + '#';
-                } else if (note.charAt(1) === 'B' || note.charAt(1) === '♭') {
+                } else if (note.charAt(1) === 'b' || note.charAt(1) === '♭') {
                     if (base === 'E') return 'F';
                     if (base === 'B') return 'C';
                     for (let i = 0; i < NOTES.length - 1; i++) {

@@ -259,6 +259,14 @@
             'B#': 'C', 'C♭': 'B'
         };
         
+        const FLAT_NOTES = {
+            'C#': 'Db', 'D#': 'Eb', 'F#': 'Gb', 'G#': 'Ab', 'A#': 'Bb'
+        };
+        
+        function toFlatNote(note) {
+            return FLAT_NOTES[note] || note;
+        }
+        
         const CHORD_INTERVALS = {
             'major': [0, 4, 7],
             'm': [0, 3, 7],
@@ -441,6 +449,7 @@
                 let notes = getChordNotes(root, quality);
                 let cnName = CHORD_NAMES[quality] || quality;
                 let chordName = root + ' ' + cnName;
+                const displayNotes = notes.map(toFlatNote);
                 
                 if (bass && bass !== root) {
                     const sortedNotes = [...notes].sort((a, b) => {
@@ -450,13 +459,13 @@
                         return ((aIdx - rootIdx + 12) % 12) - ((bIdx - rootIdx + 12) % 12);
                     });
                     notes = sortedNotes;
-                    chordName += ` (转位: ${bass}低音)`;
+                    chordName += ` (转位: ${toFlatNote(bass)}低音)`;
                 }
                 
                 document.getElementById('chord-result-title').textContent = chordName;
                 document.getElementById('chord-result-notes').innerHTML = 
-                    notes.map(n => `<span class="note">${n}</span>`).join('');
-                document.getElementById('chord-result-type').textContent = `音程: ${notes.join(' - ')}`;
+                    displayNotes.map(n => `<span class="note">${n}</span>`).join('');
+                document.getElementById('chord-result-type').textContent = `音程: ${displayNotes.join(' - ')}`;
                 document.getElementById('chord-result').classList.add('show');
             } catch (e) {
                 showError('chord-result', '无法解析和弦，请检查输入格式');
@@ -517,12 +526,13 @@
             let resultType = '';
             
             const getChordWithNotes = (root, quality) => {
-                const notes = getChordNotes(root, quality);
+                const notes = getChordNotes(root, quality).map(toFlatNote);
                 return (CHORD_NAMES[quality] || quality) + ` (${notes.join(' - ')})`;
             };
             
             if (exactMatches.length > 0) {
-                resultTitle = '🎯 最匹配: ' + exactMatches[0].name + ` (${getChordNotes(root, exactMatches[0].quality).join(' - ')})`;
+                const exactNotes = getChordNotes(root, exactMatches[0].quality).map(toFlatNote);
+                resultTitle = '🎯 最匹配: ' + exactMatches[0].name + ` (${exactNotes.join(' - ')})`;
                 if (exactMatches.length > 1) {
                     resultTitle += ' 等';
                 }
@@ -535,7 +545,7 @@
                 resultTitle = '可能的和弦: ' + possibleMatches.map(c => getChordWithNotes(root, c.quality)).join(' / ');
                 resultType = `共 ${possibleMatches.length} 种`;
             } else {
-                const sortedNotes = uniqueNotes.sort((a, b) => getNoteIndex(a) - getNoteIndex(b));
+                const sortedNotes = uniqueNotes.sort((a, b) => getNoteIndex(a) - getNoteIndex(b)).map(toFlatNote);
                 resultTitle = '未找到匹配的和弦';
                 resultType = `输入的音: ${sortedNotes.join(' - ')}`;
             }

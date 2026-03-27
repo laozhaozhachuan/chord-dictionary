@@ -324,13 +324,12 @@
         };
         
         function normalizeNote(note) {
-            note = note.trim();
+            note = note.trim().toLowerCase();
             note = note.replace('♯', '#').replace('♭', 'b');
-            note = note.charAt(0).toUpperCase() + note.slice(1);
-            if (NOTE_ALIASES[note]) {
-                return NOTE_ALIASES[note];
+            if (NOTE_ALIASES[note.toUpperCase()]) {
+                return NOTE_ALIASES[note.toUpperCase()];
             }
-            let base = note.charAt(0);
+            let base = note.charAt(0).toUpperCase();
             if (note.length > 1) {
                 if (note.charAt(1) === '#' || note.charAt(1) === '♯') {
                     base = base + '#';
@@ -341,6 +340,11 @@
                         if (NOTES[i].charAt(0) === base && NOTES[i].length === 1) {
                             return NOTES[i + 1];
                         }
+                    }
+                }
+            }
+            return base;
+        }
                     }
                 }
             }
@@ -492,8 +496,6 @@
                 resultDiv.classList.add('show');
                 return;
             }
-            
-            titleDiv.className = 'result-title';
             
             const uniqueNotes = [...new Set(notes)];
             const root = uniqueNotes[0];
